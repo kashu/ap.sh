@@ -50,9 +50,9 @@ else
 fi
 
 # Check if there is any device support AP mode
-`iw list|grep -sq "* AP"` || { echo "No device support AP mode." && exit 11; }
+`iw list | grep -sq "* AP"` || { echo "No device support AP mode." && exit 11; }
 
-zenity --password --title=" [sudo] password for `id -nu`: "|sudo -S nmcli nm wifi off
+zenity --password --title=" [sudo] password for `id -nu`: " | sudo -S nmcli nm wifi off
 sudo rfkill unblock wlan
 sudo ifconfig wlan0 192.168.11.1 netmask 255.255.255.0
 sudo sysctl -w net.ipv4.ip_forward=1
@@ -77,6 +77,7 @@ subnet 192.168.11.0 netmask 255.255.255.0
  option routers 192.168.11.1;
 }
 EOF
+
 sudo dhcpd -4 wlan0 -cf /tmp/dhcpd.conf -pf /var/run/dhcp-server/dhcpd.pid
 
 cat > /tmp/hostapd.conf << EOF
@@ -93,5 +94,5 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 EOF
-sudo hostapd -d /tmp/hostapd.conf
 
+sudo hostapd -B /tmp/hostapd.conf
