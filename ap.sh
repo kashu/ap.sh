@@ -97,7 +97,7 @@ wps_rf_bands=g
 #ap_isolate=1
 channel=1
 wep_default_key=0
-# wpa=1 for password access, wpa=0 for passwordless access.
+#wpa=1 for password access, wpa=0 for passwordless access.
 #wpa=1
 #auth_algs=1
 #wpa_passphrase=999999999999999
