@@ -1,7 +1,7 @@
 #!/bin/bash
 #Author: kashu
-#My Website: https://kashu.org
-#Date: 2016-01-16
+#My Website: https://github.com/kashu
+#Date: 2018-01-21
 #Filename: ap.sh
 #Description:  Create an Ad-Hoc wireless network on my Xubuntu laptop.
 #More: https://help.ubuntu.com/community/WifiDocs/WirelessAccessPoint
@@ -50,9 +50,9 @@ else
 fi
 
 # Check if there is any device support AP mode
-`iw list | grep -sq "* AP"` || { echo "No device support AP mode." && exit 11; }
+`iw list|grep -sq "* AP"` || { echo "No device support AP mode." && exit 11; }
 
-zenity --password --title=" [sudo] password for `id -nu`: " | sudo -S nmcli nm wifi off
+zenity --password --title=" [sudo] password for `id -nu`: "|sudo -S nmcli nm wifi off
 sudo rfkill unblock wlan
 sudo ifconfig wlan0 192.168.11.1 netmask 255.255.255.0
 sudo sysctl -w net.ipv4.ip_forward=1
@@ -66,33 +66,44 @@ if [ ! -f /etc/apparmor.d/disable/usr.sbin.dhcpd ]; then
 fi
 
 cat > /tmp/dhcpd.conf << EOF
-default-lease-time 600;
-max-lease-time 7200;
+default-lease-time 7200;
+max-lease-time 9200;
 subnet 192.168.11.0 netmask 255.255.255.0
 {
- range 192.168.11.100 192.168.11.110;
-# Google Public DNS Server
- option domain-name-servers 8.8.8.8;
- option domain-name-servers 8.8.4.4;
+ range 192.168.11.100 192.168.11.190;
+# OpenDNS Server IP
+option domain-name-servers 114.114.114.114;
+# option domain-name-servers 223.5.5.5;
+# option domain-name-servers 208.67.222.222;
+# option domain-name-servers 208.67.222.220;
  option routers 192.168.11.1;
 }
 EOF
-
 sudo dhcpd -4 wlan0 -cf /tmp/dhcpd.conf -pf /var/run/dhcp-server/dhcpd.pid
 
 cat > /tmp/hostapd.conf << EOF
+# more help: zcat /usr/share/doc/hostapd/examples/hostapd.conf.gz
 interface=wlan0
 driver=nl80211
-ssid=kashu
+#ssid=This_Is_SSID
+ssid2=P"妹子来撩我\n我单身"
+#country_code=CN
+ieee80211n=1
+wmm_enabled=1
+ht_capab=HT40+
 hw_mode=g
-channel=10
+wps_rf_bands=g
+#supported_rates=10 20 55 110 60 90 120 180 240 360 480 540
+#ap_isolate=1
+channel=1
+wep_default_key=0
 # wpa=1 for password access, wpa=0 for passwordless access.
-wpa=1
-auth_algs=1
-wpa_passphrase=wifi_password
-wpa_key_mgmt=WPA-PSK
-wpa_pairwise=TKIP
-rsn_pairwise=CCMP
+#wpa=1
+#auth_algs=1
+#wpa_passphrase=999999999999999
+#wpa_passphrase=kashu
+#wpa_key_mgmt=WPA-PSK
+#wpa_pairwise=TKIP
+#rsn_pairwise=CCMP
 EOF
-
 sudo hostapd -B /tmp/hostapd.conf
